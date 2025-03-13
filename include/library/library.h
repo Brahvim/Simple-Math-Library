@@ -1,15 +1,5 @@
 #pragma once
 
-#define SML_FLOAT(p_dataStructure)	((float*) (p_dataStructure))
-
-#define SML_QUAT(p_floatPointer)	((struct SmlQuat*) (p_floatPointer))
-#define SML_VEC3(p_floatPointer)	((struct SmlVec3*) (p_floatPointer))
-#define SML_VEC2(p_floatPointer)	((struct SmlVec2*) (p_floatPointer))
-
-#define SML_MAT22(p_floatPointer)	((struct SmlMat22*) (p_floatPointer))
-#define SML_MAT33(p_floatPointer)	((struct SmlMat33*) (p_floatPointer))
-#define SML_MAT44(p_floatPointer)	((struct SmlMat44*) (p_floatPointer))
-
 // Copier functions!:
 inline struct SmlQuat smlQuat(float*);
 inline struct SmlVec3 smlVec3(float*);
