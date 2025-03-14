@@ -1,3 +1,9 @@
 {
-	"sonarlint.pathToCompileCommands": "${workspaceFolder}/build/compile_commands.json"
+	"sonarlint.pathToCompileCommands": "${workspaceFolder}/build/compile_commands.json",
+	"files.associations": {
+		"*.s": "asm-intel-x86-generic",
+		"*.asm": "asm-intel-x86-generic",
+		"*.luac": "lua",
+		"library.h": "c"
+	}
 }
