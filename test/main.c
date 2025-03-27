@@ -8,8 +8,12 @@ int main(int const p_count, char *p_values[]) {
 	struct SmlMat22 mat = smlMat22(arr);
 	printf("%f, %f, %f, %f.", mat.r00, mat.r01, mat.r10, mat.r11);
 
-	// memcpy(mat.one, arr, sizeof(struct SmlMat22));
-	// struct SmlMat22 mat = (struct SmlMat22) { arr[0], arr[1], arr[2], arr[3], };
+	struct SmlVec3 vec1 = smlVec3(arr);
+	struct SmlVec3 vec2 = smlVec3(arr);
+	// float *vec3 = 
+	smlVec3Add(&vec1, &vec2, &vec1);
+
+	// struct SmlQuat q = { .data = { 1, 2, 3, 4 } };
 
 	return EXIT_SUCCESS;
 }

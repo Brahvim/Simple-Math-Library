@@ -4,6 +4,11 @@
 		"*.s": "asm-intel-x86-generic",
 		"*.asm": "asm-intel-x86-generic",
 		"*.luac": "lua",
-		"library.h": "c"
+		"library.h": "c",
+		"functional": "c",
+		"__functional_03": "c",
+		"climits": "c",
+		"*.ipp": "c",
+		"random": "c"
 	}
 }
