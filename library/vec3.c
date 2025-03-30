@@ -1,4 +1,6 @@
 #include <math.h>
+
+#include "internals/ifs.h"
 #include "library/library.h"
 
 inline float smlVec3Direction2d(struct SmlVec3* p_vector) {
@@ -6,7 +8,7 @@ inline float smlVec3Direction2d(struct SmlVec3* p_vector) {
 }
 
 inline float smlVec3Magnitude(struct SmlVec3 const *p_vector) {
-	return sqrtf(smlVec3MagnitudeSquared(p_vector));
+	return __builtin_sqrtf(smlVec3MagnitudeSquared(p_vector));
 }
 
 inline struct SmlVec3* smlVec3One(struct SmlVec3 *const p_vector) {
@@ -42,20 +44,21 @@ inline float smlVec3Dot(struct SmlVec3 const *const p_first, struct SmlVec3 cons
 
 inline struct SmlVec3* smlVec3Normalize(struct SmlVec3 const *p_vector, struct SmlVec3 *const p_destination) {
 	float mag = smlVec3MagnitudeSquared(p_vector);
-	mag = mag == 0.0 ? 1 : sqrtf(mag);
+	mag = mag == 0.0 ? 1 : __builtin_sqrtf(mag);
 
-	p_destination->x = p_vector->x / mag;
-	p_destination->y = p_vector->y / mag;
-	p_destination->z = p_vector->z / mag;
+	float const magInv = 1.0f / mag;
+	p_destination->x = p_vector->x * magInv;
+	p_destination->y = p_vector->y * magInv;
+	p_destination->z = p_vector->z * magInv;
 	return p_destination;
 }
 
 inline struct SmlVec3* smlVec3NormalizeUnchecked(struct SmlVec3 const *p_vector, struct SmlVec3 *const p_destination) {
-	float const mag = smlVec3Magnitude(p_vector);
+	float const magInv = 1.0f / smlVec3Magnitude(p_vector);
 
-	p_destination->x = p_vector->x / mag;
-	p_destination->y = p_vector->y / mag;
-	p_destination->z = p_vector->z / mag;
+	p_destination->x = p_vector->x * magInv;
+	p_destination->y = p_vector->y * magInv;
+	p_destination->z = p_vector->z * magInv;
 	return p_destination;
 }
 

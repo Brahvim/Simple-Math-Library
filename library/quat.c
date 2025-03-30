@@ -1,8 +1,10 @@
 #include <math.h>
+
+#include "internals/ifs.h"
 #include "library/library.h"
 
 inline float smlQuatMagnitude(struct SmlQuat const *const p_quaternion) {
-	return sqrtf(smlQuatMagnitudeSquared(p_quaternion));
+	return __builtin_sqrtf(smlQuatMagnitudeSquared(p_quaternion));
 }
 
 inline struct SmlQuat* smlQuatIdentity(struct SmlQuat *const p_destination) {
@@ -30,15 +32,109 @@ inline float smlQuatDot(struct SmlQuat const *const p_first, struct SmlQuat cons
 		p_first->w * p_second->w;
 }
 
-inline struct SmlQuat* smlQuatInvert(struct SmlQuat const *const p_quaternion, struct SmlQuat *const p_destination) {
-	float const magSq = smlQuatMagnitudeSquared(p_quaternion);
-	smlQuatConjugate(p_quaternion, p_destination);
-	float const register inv = 1.0f / magSq;
+inline struct SmlQuat* smlQuatFromMatrix33(struct SmlMat33 const *p_matrix, struct SmlQuat *p_quaternion) {
+	float const trace = p_matrix->r11 + p_matrix->r22 + p_matrix->r33; // Sum of mat digonals!
 
-	p_destination->x *= inv;
-	p_destination->y *= inv;
-	p_destination->z *= inv;
-	p_destination->w *= inv;
+	ifl(trace > 0.0f) {
+
+		float const s = 2.0f * __builtin_sqrtf(trace + 1.0f); // `4w`
+		float const sInv = 1.0f / s;
+		p_quaternion->x = (p_matrix->r32 - p_matrix->r23) * sInv;
+		p_quaternion->y = (p_matrix->r13 - p_matrix->r31) * sInv;
+		p_quaternion->z = (p_matrix->r21 - p_matrix->r12) * sInv;
+		p_quaternion->w = s * 0.25f;
+
+	} else { // TODO: Figure out how to lower branches if one *actually* can...
+
+		ifu(p_matrix->r11 > p_matrix->r22 && p_matrix->r11 > p_matrix->r33) {
+
+			float const s = 2.0f * __builtin_sqrtf(1.0f + p_matrix->r11 - p_matrix->r22 - p_matrix->r33);
+			float const sInv = 1.0f / s;
+			p_quaternion->x = s * 0.25f;
+			p_quaternion->y = (p_matrix->r12 + p_matrix->r21) * sInv;
+			p_quaternion->z = (p_matrix->r13 + p_matrix->r31) * sInv;
+			p_quaternion->w = (p_matrix->r32 - p_matrix->r23) * sInv;
+
+		} else ifu(p_matrix->r22 > p_matrix->r33) {
+
+			float const s = 2.0f * __builtin_sqrtf(1.0f + p_matrix->r22 - p_matrix->r11 - p_matrix->r33);
+			float const sInv = 1.0f / s;
+			p_quaternion->x = (p_matrix->r12 + p_matrix->r21) * sInv;
+			p_quaternion->y = s * 0.25f;
+			p_quaternion->z = (p_matrix->r23 + p_matrix->r32) * sInv;
+			p_quaternion->w = (p_matrix->r13 - p_matrix->r31) * sInv;
+
+		} else {
+
+			float const s = 2.0f * __builtin_sqrtf(1.0f + p_matrix->r33 - p_matrix->r11 - p_matrix->r22);
+			float const sInv = 1.0f / s;
+			p_quaternion->x = (p_matrix->r13 + p_matrix->r31) * sInv;
+			p_quaternion->y = (p_matrix->r23 + p_matrix->r32) * sInv;
+			p_quaternion->z = s * 0.25f;
+			p_quaternion->w = (p_matrix->r21 - p_matrix->r12) * sInv;
+
+		}
+
+	}
+
+	return p_quaternion;
+}
+
+inline struct SmlMat44* smlQuatToMatrix44(struct SmlQuat const *const p_source, struct SmlMat44 *p_destination) {
+	smlQuatToMatrix33(p_source, &(p_destination->mat33));
+
+	/*
+	 _ 	 		   	                  _
+	/     0       1      2     [3]     \ <-----\
+	|     4       5      6     [7]     | <----- Note these!
+	|     8       9     10    [11]     | <----- (and how `[15]` is part of both the "4x4 row and column".)
+	\_   [12]   [13]   [14]   [15]    _/ <-----/
+	*/
+
+	// Those are the ones that are supposed to be updated, to *part* of an IDENTITY 4x4 matrix.
+
+	// Row:
+	p_destination->one[3] = 0;
+	p_destination->one[7] = 0;
+	p_destination->one[11] = 0;
+
+	// Column:
+	p_destination->one[12] = 0;
+	p_destination->one[13] = 0;
+	p_destination->one[14] = 0;
+
+	// 4th element in both:
+	p_destination->one[15] = 1;
+
+	return p_destination;
+}
+
+inline struct SmlQuat* smlQuatInvert(struct SmlQuat const *const p_quaternion, struct SmlQuat *const p_destination) {
+	float const magSqInv = 1.0f / smlQuatMagnitudeSquared(p_quaternion);
+	smlQuatConjugate(p_quaternion, p_destination);
+
+	p_destination->x *= magSqInv;
+	p_destination->y *= magSqInv;
+	p_destination->z *= magSqInv;
+	p_destination->w *= magSqInv;
+
+	return p_destination;
+}
+
+inline struct SmlVec3* smlQuatToEuler(struct SmlQuat const *const p_quaternion, struct SmlVec3 *const p_destination) {
+	float const fmsTwice = 2 * (p_quaternion->w * p_quaternion->y - p_quaternion->z * p_quaternion->x); // Basically an FMS op.
+
+	p_destination->x = asinf(fmsTwice);
+
+	p_destination->y = atan2f(
+		2 * (p_quaternion->w * p_quaternion->x + p_quaternion->y * p_quaternion->z),
+		1 - 2 * (p_quaternion->x * p_quaternion->x + p_quaternion->y * p_quaternion->y)
+	);
+
+	p_destination->z = atan2f(
+		2 * (p_quaternion->w * p_quaternion->z + p_quaternion->x * p_quaternion->y),
+		1 - 2 * (p_quaternion->y * p_quaternion->y + p_quaternion->z * p_quaternion->z)
+	);
 
 	return p_destination;
 }
@@ -71,97 +167,6 @@ inline struct SmlMat33* smlQuatToMatrix33(struct SmlQuat const *const p_source, 
 	return p_destination;
 }
 
-inline struct SmlVec3* smlQuatToEuler(struct SmlQuat const *const p_quaternion, struct SmlVec3 *const p_destination) {
-	float const fmsTwice = 2 * (p_quaternion->w * p_quaternion->y - p_quaternion->z * p_quaternion->x); // Basically an FMS op.
-
-	p_destination->x = asinf(fmsTwice);
-
-	p_destination->y = atan2f(
-		2 * (p_quaternion->w * p_quaternion->x + p_quaternion->y * p_quaternion->z),
-		1 - 2 * (p_quaternion->x * p_quaternion->x + p_quaternion->y * p_quaternion->y)
-	);
-
-	p_destination->z = atan2f(
-		2 * (p_quaternion->w * p_quaternion->z + p_quaternion->x * p_quaternion->y),
-		1 - 2 * (p_quaternion->y * p_quaternion->y + p_quaternion->z * p_quaternion->z)
-	);
-
-	return p_destination;
-}
-
-inline struct SmlMat44* smlQuatToMatrix44(struct SmlQuat const *const p_source, struct SmlMat44 *p_destination) {
-	p_destination->mat33 = smlQuatToMatrix33(p_source, (struct SmlMat33*) p_destination);
-
-	/*
-	 _ 	 		   	                  _
-	/     0       1      2     [3]     \ <-----\
-	|     4       5      6     [7]     | <----- Note these!
-	|     8       9     10    [11]     | <----- (and how `[15]` is part of both the "4x4 row and column".)
-	\_   [12]   [13]   [14]   [15]    _/ <-----/
-	*/
-
-	// Those are the ones that are supposed to be updated, to *part* of an IDENTITY 4x4 matrix.
-
-	// Row:
-	p_destination->one[3] = 0;
-	p_destination->one[7] = 0;
-	p_destination->one[11] = 0;
-
-	// Column:
-	p_destination->one[12] = 0;
-	p_destination->one[13] = 0;
-	p_destination->one[14] = 0;
-
-	// 4th element in both:
-	p_destination->one[15] = 1;
-
-	return p_destination;
-}
-
-inline struct SmlQuat* smlQuatFromMatrix33(struct SmlMat33 const *p_matrix, struct SmlQuat *p_quaternion) {
-	float const trace = p_matrix->r00 + p_matrix->r11 + p_matrix->r22; // Sum of mat digonals!
-
-	if (trace > 0.0f) {
-
-		float const s = 2.0f * sqrtf(trace + 1.0f); // `4w`
-		p_quaternion->x = (p_matrix->r21 - p_matrix->r12) / s;
-		p_quaternion->y = (p_matrix->r02 - p_matrix->r20) / s;
-		p_quaternion->z = (p_matrix->r10 - p_matrix->r01) / s;
-		p_quaternion->w = s * 0.25f;
-
-	} else { // TODO: Figure out how to lower branches if one *actually* can...
-
-		if (p_matrix->r00 > p_matrix->r11 && p_matrix->r00 > p_matrix->r22) {
-
-			float const s = 2.0f * sqrtf(1.0f + p_matrix->r00 - p_matrix->r11 - p_matrix->r22);
-			p_quaternion->x = s * 0.25f;
-			p_quaternion->y = (p_matrix->r01 + p_matrix->r10) / s;
-			p_quaternion->z = (p_matrix->r02 + p_matrix->r20) / s;
-			p_quaternion->w = (p_matrix->r21 - p_matrix->r12) / s;
-
-		} else if (p_matrix->r11 > p_matrix->r22) {
-
-			float const s = 2.0f * sqrtf(1.0f + p_matrix->r11 - p_matrix->r00 - p_matrix->r22);
-			p_quaternion->x = (p_matrix->r01 + p_matrix->r10) / s;
-			p_quaternion->y = s * 0.25f;
-			p_quaternion->z = (p_matrix->r12 + p_matrix->r21) / s;
-			p_quaternion->w = (p_matrix->r02 - p_matrix->r20) / s;
-
-		} else {
-
-			float const s = 2.0f * sqrtf(1.0f + p_matrix->r22 - p_matrix->r00 - p_matrix->r11);
-			p_quaternion->x = (p_matrix->r02 + p_matrix->r20) / s;
-			p_quaternion->y = (p_matrix->r12 + p_matrix->r21) / s;
-			p_quaternion->z = s * 0.25f;
-			p_quaternion->w = (p_matrix->r10 - p_matrix->r01) / s;
-
-		}
-
-	}
-
-	return p_quaternion;
-}
-
 inline struct SmlQuat* smlQuatConjugate(struct SmlQuat const *const p_quaternion, struct SmlQuat *const p_destination) {
 	p_destination->x = -p_quaternion->x;
 	p_destination->y = -p_quaternion->y;
@@ -171,33 +176,34 @@ inline struct SmlQuat* smlQuatConjugate(struct SmlQuat const *const p_quaternion
 }
 
 inline struct SmlQuat* smlQuatNormalize(struct SmlQuat const *const p_quaternion, struct SmlQuat *const p_destination) {
-	float mag = smlQuatMagnitudeSquared(p_quaternion);
+	float magSq = smlQuatMagnitudeSquared(p_quaternion);
 
-	if (mag == 0.0f) {
+	ifu(magSq == 0.0f) {
 
-		mag = 1;
+		magSq = 1;
 
 	} else {
 
-		mag = sqrtf(mag);
+		magSq = __builtin_sqrtf(magSq);
 
 	}
 
-	p_destination->x = p_quaternion->x / mag;
-	p_destination->y = p_quaternion->y / mag;
-	p_destination->z = p_quaternion->z / mag;
-	p_destination->w = p_quaternion->w / mag;
+	float const magSqInv = 1.0f / magSq;
+	p_destination->x = p_quaternion->x * magSqInv;
+	p_destination->y = p_quaternion->y * magSqInv;
+	p_destination->z = p_quaternion->z * magSqInv;
+	p_destination->w = p_quaternion->w * magSqInv;
 
 	return p_destination;
 }
 
 inline struct SmlQuat* smlQuatNormalizeUnchecked(struct SmlQuat const *const p_quaternion, struct SmlQuat *const p_destination) {
-	float const mag = smlQuatMagnitude(p_quaternion);
+	float const magInv = 1.0f / smlQuatMagnitude(p_quaternion);
 
-	p_destination->x = p_quaternion->x / mag;
-	p_destination->y = p_quaternion->y / mag;
-	p_destination->z = p_quaternion->z / mag;
-	p_destination->w = p_quaternion->w / mag;
+	p_destination->x = p_quaternion->x * magInv;
+	p_destination->y = p_quaternion->y * magInv;
+	p_destination->z = p_quaternion->z * magInv;
+	p_destination->w = p_quaternion->w * magInv;
 
 	return p_destination;
 }
@@ -270,7 +276,7 @@ inline struct SmlVec3* smlQuatRotateVector3d(struct SmlQuat const *const p_quate
 
 	};
 
-	struct SmlQuat conj;
+	struct SmlQuat conj = { 0 };
 	smlQuatConjugate(p_quaternion, &conj);
 
 	smlQuatMult(p_quaternion, &quatVec, &quatVec); // First mult, `q * v`,
@@ -284,7 +290,7 @@ inline struct SmlVec3* smlQuatRotateVector3d(struct SmlQuat const *const p_quate
 }
 
 inline struct SmlVec2* smlQuatRotateVector2d(struct SmlQuat const *const p_quaternion, struct SmlVec2 *const p_vector, struct SmlVec2 *const p_destination) {
-	struct SmlQuat conj;
+	struct SmlQuat conj = { 0 };
 	smlQuatConjugate(p_quaternion, &conj);
 
 	struct SmlQuat quatVec2d = { // Convert vector to quaternion (`w = 0`!).
@@ -321,7 +327,7 @@ inline struct SmlQuat* smlQuatSlerp(struct SmlQuat const *const p_source, struct
 
 	// If dot product is negative, take the long way around (flip target):
 	struct SmlQuat target;
-	if (dot < 0.0f) {
+	ifu(dot < 0.0f) {
 
 		dot = -dot;
 		target.x = -p_target->x;
@@ -336,15 +342,17 @@ inline struct SmlQuat* smlQuatSlerp(struct SmlQuat const *const p_source, struct
 	}
 
 	// If the quaternions are too close, fallback to an n-lerp:
-	// if (dot > 0.9995f) {
+	// ifu (dot > 0.9995f) {
 	// 	return smlQuatNlerp(p_source, &target, p_amount, p_destination);
 	// }
 
 	// S-lerp formula:
 	float const theta = acosf(dot);
 	float const sinTheta = sinf(theta);
-	float const mixTarget = sinf(p_amount * theta) / sinTheta;
-	float const mixSource = sinf((1.0f - p_amount) * theta) / sinTheta;
+	float const sinThetaInv = 1.0f / sinTheta;
+
+	float const mixTarget = sinf(p_amount * theta) * sinThetaInv;
+	float const mixSource = sinf((1.0f - p_amount) * theta) * sinThetaInv;
 
 	p_destination->x = mixSource * p_source->x + mixTarget * target.x;
 	p_destination->y = mixSource * p_source->y + mixTarget * target.y;

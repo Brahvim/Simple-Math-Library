@@ -1,4 +1,6 @@
 #include <math.h>
+
+#include "internals/ifs.h"
 #include "library/library.h"
 
 inline float smlVec2Direction(struct SmlVec2 const *p_vector) {
@@ -6,7 +8,7 @@ inline float smlVec2Direction(struct SmlVec2 const *p_vector) {
 }
 
 inline float smlVec2Magnitude(struct SmlVec2 const *p_vector) {
-	return sqrtf(smlVec2MagnitudeSquared(p_vector));
+	return __builtin_sqrtf(smlVec2MagnitudeSquared(p_vector));
 }
 
 inline struct SmlVec2* smlVec2One(struct SmlVec2 *const p_vector) {
@@ -39,18 +41,20 @@ inline float smlVec2Dot(struct SmlVec2 const *const p_first, struct SmlVec2 cons
 
 inline struct SmlVec2* smlVec2Normalize(struct SmlVec2 const *p_vector, struct SmlVec2 *const p_destination) {
 	float mag = smlVec2MagnitudeSquared(p_vector);
-	mag = mag == 0.0 ? 1 : sqrtf(mag);
+	mag = mag == 0.0 ? 1 : __builtin_sqrtf(mag);
 
-	p_destination->x = p_vector->x / mag;
-	p_destination->y = p_vector->y / mag;
+	float const magInv = 1.0f / mag;
+	p_destination->x = p_vector->x * magInv;
+	p_destination->y = p_vector->y * magInv;
 	return p_destination;
 }
 
 inline struct SmlVec2* smlVec2NormalizeUnchecked(struct SmlVec2 const *p_vector, struct SmlVec2 *const p_destination) {
 	float const mag = smlVec2MagnitudeSquared(p_vector); // Are all compoents in registers? Dunno, so we cache this.
 
-	p_destination->x = p_vector->x / mag;
-	p_destination->y = p_vector->y / mag;
+	float const magInv = 1.0f / mag;
+	p_destination->x = p_vector->x * magInv;
+	p_destination->y = p_vector->y * magInv;
 	return p_destination;
 }
 
