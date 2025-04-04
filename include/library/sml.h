@@ -248,6 +248,7 @@ struct SmlMat22* smlMat22MultScalar(struct SmlMat22 const *const matrix, float c
 struct SmlMat22* smlMat22Add(struct SmlMat22 const *const first, struct SmlMat22 const *const second, struct SmlMat22 *const destination);
 struct SmlMat22* smlMat22Sub(struct SmlMat22 const *const first, struct SmlMat22 const *const second, struct SmlMat22 *const destination);
 struct SmlMat22* smlMat22Mult(struct SmlMat22 const *const first, struct SmlMat22 const *const second, struct SmlMat22 *const destination);
+struct SmlVec2* smlMat22MultVec2(struct SmlMat22 const *const matrix, struct SmlVec2 const *const vector2, struct SmlVec2 *const destination);
 struct SmlMat22* smlMat22DivMembers(struct SmlMat22 const *const first, struct SmlMat22 const *const second, struct SmlMat22 *const destination);
 struct SmlMat22* smlMat22MultMembers(struct SmlMat22 const *const first, struct SmlMat22 const *const second, struct SmlMat22 *const destination);
 struct SmlMat22* smlMat22InvertGivenInvertedDeterminant(struct SmlMat22 const *const matrix, struct SmlMat22 *const destination, float invertedDeterminant);
@@ -258,6 +259,12 @@ float smlMat33Determinant(struct SmlMat33 const *const matrix);
 struct SmlMat33* smlMat33AdjugateSame(struct SmlMat33 *const matrix);
 struct SmlMat33* smlMat33SwapMajority(struct SmlMat33 *const matrix);
 struct SmlMat33* smlMat33Identity(struct SmlMat33 *const destination);
+struct SmlMat33* smlMat33ShearXY(struct SmlMat33 *const matrix, float const shear);
+struct SmlMat33* smlMat33ShearXZ(struct SmlMat33 *const matrix, float const shear);
+struct SmlMat33* smlMat33ShearYZ(struct SmlMat33 *const matrix, float const shear);
+struct SmlMat33* smlMat33RotateX(struct SmlMat33 *const matrix, float const angle);
+struct SmlMat33* smlMat33RotateY(struct SmlMat33 *const matrix, float const angle);
+struct SmlMat33* smlMat33RotateZ(struct SmlMat33 *const matrix, float const angle);
 float smlMat33Invert(struct SmlMat33 const *const matrix, struct SmlMat33 *const destination);
 struct SmlMat33* smlMat33Adjugate(struct SmlMat33 *const matrix, struct SmlMat33 *const destination);
 float smlMat33InvertUnchecked(struct SmlMat33 const *const matrix, struct SmlMat33 *const destination);
@@ -270,8 +277,9 @@ struct SmlMat33* smlMat33SubScalar(struct SmlMat33 const *const matrix, float co
 struct SmlMat33* smlMat33MultScalar(struct SmlMat33 const *const matrix, float const scalar, struct SmlMat33 *const destination);
 struct SmlMat33* smlMat33Sub(struct SmlMat33 const *const first, struct SmlMat33 const *const second, struct SmlMat33 *const destination);
 struct SmlMat33* smlMat33Add(struct SmlMat33 const *const first, struct SmlMat33 const *const second, struct SmlMat33 *const destination);
-struct SmlMat33* smlMat33DivMembers(struct SmlMat33 const *const first, struct SmlMat33 const *const second, struct SmlMat33 *const destination);
 struct SmlMat33* smlMat33Mult(struct SmlMat33 const *const first, struct SmlMat33 const *const second, struct SmlMat33 *const destination);
+struct SmlVec3* smlMat33MultVec3(struct SmlMat33 const *const matrix, struct SmlVec3 const *const vector3, struct SmlVec3 *const destination);
+struct SmlMat33* smlMat33DivMembers(struct SmlMat33 const *const first, struct SmlMat33 const *const second, struct SmlMat33 *const destination);
 struct SmlMat33* smlMat33MultMembers(struct SmlMat33 const *const first, struct SmlMat33 const *const second, struct SmlMat33 *const destination);
 struct SmlMat33* smlMat33InvertGivenInvertedDeterminant(struct SmlMat33 const *const matrix, struct SmlMat33 *const destination, float invertedDeterminant);
 #pragma endregion
@@ -282,6 +290,7 @@ struct SmlMat44* smlMat44AdjugateSame(struct SmlMat44 *const matrix);
 struct SmlMat44* smlMat44SwapMajority(struct SmlMat44 *const matrix);
 struct SmlMat44* smlMat44Identity(struct SmlMat44 *const destination);
 float smlMat44Invert(struct SmlMat44 const *const matrix, struct SmlMat44 *const destination);
+struct SmlMat44* smlMat44RotateQuat(struct SmlMat44 const *const matrix, struct SmlQuat *const quat);
 struct SmlMat44* smlMat44Adjugate(struct SmlMat44 *const matrix, struct SmlMat44 *const destination);
 float smlMat44InvertUnchecked(struct SmlMat44 const *const matrix, struct SmlMat44 *const destination);
 struct SmlMat44* smlMat44Copy(struct SmlMat44 const *const p_matrix, struct SmlMat44 *const p_destination);
@@ -294,6 +303,7 @@ struct SmlMat44* smlMat44MultScalar(struct SmlMat44 const *const matrix, float c
 struct SmlMat44* smlMat44Add(struct SmlMat44 const *const first, struct SmlMat44 const *const second, struct SmlMat44 *const destination);
 struct SmlMat44* smlMat44Sub(struct SmlMat44 const *const first, struct SmlMat44 const *const second, struct SmlMat44 *const destination);
 struct SmlMat44* smlMat44Mult(struct SmlMat44 const *const first, struct SmlMat44 const *const second, struct SmlMat44 *const destination);
+struct SmlQuat* smlMat44MultVec4(struct SmlMat44 const *const matrix, struct SmlQuat const *const vector4, struct SmlQuat *const destination);
 struct SmlMat44* smlMat44DivMembers(struct SmlMat44 const *const first, struct SmlMat44 const *const second, struct SmlMat44 *const destination);
 struct SmlMat44* smlMat44MultMembers(struct SmlMat44 const *const first, struct SmlMat44 const *const second, struct SmlMat44 *const destination);
 struct SmlMat44* smlMat44InvertGivenInvertedDeterminant(struct SmlMat44 const *const matrix, struct SmlMat44 *const destination, float invertedDeterminant);
@@ -345,7 +355,6 @@ struct SmlQuat* smlQuatInvert(struct SmlQuat const *const quaternion, struct Sml
 struct SmlVec3* smlQuatToEuler(struct SmlQuat const *const quaternion, struct SmlVec3 * const destination);
 struct SmlMat33* smlQuatToMatrix33(struct SmlQuat const *const source, struct SmlMat33 *const destination); // Rotation only!
 struct SmlMat44* smlQuatToMatrix44(struct SmlQuat const *const source, struct SmlMat44 *const destination); // Complete transforms only!
-struct SmlQuat* smlQuatFromMatrix44(struct SmlMat44 const *const source, struct SmlQuat *const destination);
 struct SmlQuat* smlQuatConjugate(struct SmlQuat const *const quaternion, struct SmlQuat *const destination);
 struct SmlQuat* smlQuatNormalize(struct SmlQuat const *const quaternion, struct SmlQuat *const destination);
 struct SmlQuat* smlQuatNormalizeUnchecked(struct SmlQuat const *const quaternion, struct SmlQuat *const destination);

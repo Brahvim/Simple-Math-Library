@@ -142,6 +142,16 @@ inline struct SmlMat22* smlMat22Mult(struct SmlMat22 const *const p_first, struc
 	return p_destination;
 }
 
+inline struct SmlVec2* smlMat22MultVec2(struct SmlMat22 const *const p_matrix, struct SmlVec2 const *const p_vector2, struct SmlVec2 *const p_destination) {
+	float const x = p_vector2->x;
+	float const y = p_vector2->y;
+
+	p_destination->x = p_matrix->r11 * x + p_matrix->r12 * y;
+	p_destination->y = p_matrix->r21 * x + p_matrix->r22 * y;
+
+	return p_destination;
+}
+
 inline struct SmlMat22* smlMat22DivMembers(struct SmlMat22 const *const p_first, struct SmlMat22 const *const p_second, struct SmlMat22 *const p_destination) {
 	p_destination->r11 = p_first->r11 / p_second->r11;
 	p_destination->r12 = p_first->r12 / p_second->r12;
@@ -161,10 +171,11 @@ inline struct SmlMat22* smlMat22MultMembers(struct SmlMat22 const *const p_first
 }
 
 inline struct SmlMat22* smlMat22InvertGivenInvertedDeterminant(struct SmlMat22 const *const p_matrix, struct SmlMat22 *const p_destination, float p_invertedDeterminant) {
-	p_destination->r11 = p_matrix->r22 * p_invertedDeterminant;
-	p_destination->r12 = -p_matrix->r12 * p_invertedDeterminant;
-	p_destination->r21 = -p_matrix->r21 * p_invertedDeterminant;
-	p_destination->r22 = p_matrix->r11 * p_invertedDeterminant;
+	struct SmlMat22 cof;
+	smlMat22SwapMajorityToNew(smlMat22Cofactors(p_matrix, &cof), p_destination);
+
+	for (int i = 0; i < 4; ++i)
+		p_destination->one[i] *= p_invertedDeterminant;
 
 	return p_destination;
 }

@@ -66,6 +66,25 @@ inline struct SmlMat44* smlMat44Identity(struct SmlMat44 *const p_destination) {
 	return p_destination;
 }
 
+inline struct SmlMat44* smlMat44Scale(struct SmlMat44 *const p_matrix, struct SmlVec3 *const p_scale) {
+	p_matrix->r11 *= p_scale->x;
+	p_matrix->r12 *= p_scale->x;
+	p_matrix->r13 *= p_scale->x;
+	p_matrix->r14 *= p_scale->x;
+
+	p_matrix->r21 *= p_scale->y;
+	p_matrix->r22 *= p_scale->y;
+	p_matrix->r23 *= p_scale->y;
+	p_matrix->r24 *= p_scale->y;
+
+	p_matrix->r31 *= p_scale->z;
+	p_matrix->r32 *= p_scale->z;
+	p_matrix->r33 *= p_scale->z;
+	p_matrix->r34 *= p_scale->z;
+
+	return p_matrix;
+}
+
 inline float smlMat44Invert(struct SmlMat44 const *const p_matrix, struct SmlMat44 *const p_destination) {
 	float const det = smlMat44Determinant(p_matrix);
 
@@ -326,6 +345,20 @@ inline struct SmlMat44* smlMat44Mult(struct SmlMat44 const *const p_first, struc
 	return p_destination;
 }
 
+inline struct SmlQuat* smlMat44MultVec4(struct SmlMat44 const *const p_matrix, struct SmlQuat const *const p_vector4, struct SmlQuat *const p_destination) {
+	float const x = p_vector4->x;
+	float const y = p_vector4->y;
+	float const z = p_vector4->z;
+	float const w = p_vector4->w;
+
+	p_destination->x = p_matrix->r11 * x + p_matrix->r12 * y + p_matrix->r13 * z + p_matrix->r14 * w;
+	p_destination->y = p_matrix->r21 * x + p_matrix->r22 * y + p_matrix->r23 * z + p_matrix->r24 * w;
+	p_destination->z = p_matrix->r31 * x + p_matrix->r32 * y + p_matrix->r33 * z + p_matrix->r34 * w;
+	p_destination->w = p_matrix->r41 * x + p_matrix->r42 * y + p_matrix->r43 * z + p_matrix->r44 * w;
+
+	return p_destination;
+}
+
 inline struct SmlMat44* smlMat44DivMembers(struct SmlMat44 const *const p_first, struct SmlMat44 const *const p_second, struct SmlMat44 *const p_destination) {
 	p_destination->r11 = p_first->r11 / p_second->r11;
 	p_destination->r12 = p_first->r12 / p_second->r12;
@@ -369,10 +402,11 @@ inline struct SmlMat44* smlMat44MultMembers(struct SmlMat44 const *const p_first
 }
 
 inline struct SmlMat44* smlMat44InvertGivenInvertedDeterminant(struct SmlMat44 const *const p_matrix, struct SmlMat44 *const p_destination, float p_invertedDeterminant) {
-	p_destination->r11 = p_matrix->r22 * p_invertedDeterminant;
-	p_destination->r12 = -p_matrix->r12 * p_invertedDeterminant;
-	p_destination->r21 = -p_matrix->r21 * p_invertedDeterminant;
-	p_destination->r11 = p_matrix->r11 * p_invertedDeterminant;
+	struct SmlMat44 cof;
+	smlMat44SwapMajorityToNew(smlMat44Cofactors(p_matrix, &cof), p_destination);
+
+	for (int i = 0; i < 16; ++i)
+		p_destination->one[i] *= p_invertedDeterminant;
 
 	return p_destination;
 }
