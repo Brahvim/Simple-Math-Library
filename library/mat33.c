@@ -3,16 +3,6 @@
 #include "internals/ifs.h"
 #include "library/library.h"
 
-inline float smlMat33Trace(struct SmlMat33 const *const p_matrix) {
-	return p_matrix->r11 + p_matrix->r22 + p_matrix->r33;
-}
-
-inline char smlMat33IsSymmetric(struct SmlMat33 const *const p_matrix) {
-	return (p_matrix->r12 == p_matrix->r21 &&
-			p_matrix->r13 == p_matrix->r31 &&
-			p_matrix->r23 == p_matrix->r32);
-}
-
 inline float smlMat33Determinant(struct SmlMat33 const *const p_matrix) {
 	return p_matrix->r11 * (p_matrix->r22 * p_matrix->r33 - p_matrix->r23 * p_matrix->r32)
 		- p_matrix->r12 * (p_matrix->r21 * p_matrix->r33 - p_matrix->r23 * p_matrix->r31)
@@ -64,19 +54,6 @@ inline struct SmlMat33* smlMat33Cofactors(struct SmlMat33 const* const p_matrix,
 	p_destination->r32 = -(p_matrix->r11 * p_matrix->r32 - p_matrix->r12 * p_matrix->r31);
 	p_destination->r33 = (p_matrix->r11 * p_matrix->r22 - p_matrix->r12 * p_matrix->r21);
 
-	return p_destination;
-}
-
-inline struct SmlMat33* smlMat33Transpose(struct SmlMat33 const *const p_matrix, struct SmlMat33 *const p_destination) {
-	p_destination->r11 = p_matrix->r11;
-	p_destination->r12 = p_matrix->r21;
-	p_destination->r13 = p_matrix->r31;
-	p_destination->r21 = p_matrix->r12;
-	p_destination->r22 = p_matrix->r22;
-	p_destination->r23 = p_matrix->r32;
-	p_destination->r31 = p_matrix->r13;
-	p_destination->r32 = p_matrix->r23;
-	p_destination->r33 = p_matrix->r33;
 	return p_destination;
 }
 
@@ -175,13 +152,6 @@ inline struct SmlMat33* smlMat33Mult(struct SmlMat33 const *const p_first, struc
 	p_destination->r32 = p_first->r31 * p_second->r12 + p_first->r32 * p_second->r22 + p_first->r33 * p_second->r32;
 	p_destination->r33 = p_first->r31 * p_second->r13 + p_first->r32 * p_second->r23 + p_first->r33 * p_second->r33;
 
-	return p_destination;
-}
-
-inline struct SmlVec3* smlMat33MultVec3(struct SmlMat33 const *const p_matrix, struct SmlVec3 const *const p_vector, struct SmlVec3 *const p_destination) {
-	p_destination->x = p_matrix->r11 * p_vector->x + p_matrix->r12 * p_vector->y + p_matrix->r13 * p_vector->z;
-	p_destination->y = p_matrix->r21 * p_vector->x + p_matrix->r22 * p_vector->y + p_matrix->r23 * p_vector->z;
-	p_destination->z = p_matrix->r31 * p_vector->x + p_matrix->r32 * p_vector->y + p_matrix->r33 * p_vector->z;
 	return p_destination;
 }
 

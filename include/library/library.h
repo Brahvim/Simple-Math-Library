@@ -231,81 +231,54 @@ char smlFloatCompare(float const first, float const second, float epsilon);
 #pragma endregion
 
 #pragma region 2 * 2 Matrices.
-int smlMat22Rank(struct SmlMat22 const *const matrix);
-float smlMat22Trace(struct SmlMat22 const *const matrix);
-char smlMat22IsSymmetric(struct SmlMat22 const *const matrix);
 float smlMat22Determinant(struct SmlMat22 const *const matrix);
 struct SmlMat22* smlMat22Identity(struct SmlMat22 *const destination);
-int smlMat22TraceDeterminantIdentityCheck(struct SmlMat22 const *const matrix);
 float smlMat22Invert(struct SmlMat22 const *const matrix, struct SmlMat22 *const destination);
 float smlMat22InvertUnchecked(struct SmlMat22 const *const matrix, struct SmlMat22 *const destination);
 struct SmlMat22* smlMat22Cofactors(struct SmlMat22 const* const matrix, struct SmlMat22 *const destination);
-struct SmlVec2* smlMat22Eigenvalues(struct SmlMat22 const *const matrix, struct SmlVec2 *const destination);
-struct SmlMat22* smlMat22Transpose(struct SmlMat22 const *const matrix, struct SmlMat22 *const destination);
-struct SmlMat22* smlMat22Rotate(struct SmlMat22 const *const matrix, float angle, struct SmlMat22 *const destination);
 struct SmlMat22* smlMat22AddScalar(struct SmlMat22 const *const matrix, float const scalar, struct SmlMat22 *const destination);
 struct SmlMat22* smlMat22DivScalar(struct SmlMat22 const *const matrix, float const scalar, struct SmlMat22 *const destination);
 struct SmlMat22* smlMat22SubScalar(struct SmlMat22 const *const matrix, float const scalar, struct SmlMat22 *const destination);
 struct SmlMat22* smlMat22MultScalar(struct SmlMat22 const *const matrix, float const scalar, struct SmlMat22 *const destination);
-struct SmlMat22* smlMat22RowAdd(struct SmlMat22 const *const matrix, int rowIndex, float scalar, struct SmlMat22 *const destination);
 struct SmlMat22* smlMat22Add(struct SmlMat22 const *const first, struct SmlMat22 const *const second, struct SmlMat22 *const destination);
 struct SmlMat22* smlMat22Sub(struct SmlMat22 const *const first, struct SmlMat22 const *const second, struct SmlMat22 *const destination);
 struct SmlMat22* smlMat22Mult(struct SmlMat22 const *const first, struct SmlMat22 const *const second, struct SmlMat22 *const destination);
-struct SmlVec2* smlMat22MultVec2(struct SmlMat22 const *const matrix, struct SmlVec2 const *const vector, struct SmlVec2 *const destination);
 struct SmlMat22* smlMat22DivMembers(struct SmlMat22 const *const first, struct SmlMat22 const *const second, struct SmlMat22 *const destination);
 struct SmlMat22* smlMat22MultMembers(struct SmlMat22 const *const first, struct SmlMat22 const *const second, struct SmlMat22 *const destination);
 struct SmlMat22* smlMat22InvertGivenInvertedDeterminant(struct SmlMat22 const *const matrix, struct SmlMat22 *const destination, float invertedDeterminant);
 #pragma endregion
 
 #pragma region 3 * 3 Matrices.
-int smlMat33Rank(struct SmlMat33 const *const matrix);
-float smlMat33Trace(struct SmlMat33 const *const matrix);
-char smlMat33IsSymmetric(struct SmlMat33 const *const matrix);
 float smlMat33Determinant(struct SmlMat33 const *const matrix);
 struct SmlMat33* smlMat33Identity(struct SmlMat33 *const destination);
-int smlMat33TraceDeterminantIdentityCheck(struct SmlMat33 const *const matrix);
 float smlMat33Invert(struct SmlMat33 const *const matrix, struct SmlMat33 *const destination);
 float smlMat33InvertUnchecked(struct SmlMat33 const *const matrix, struct SmlMat33 *const destination);
 struct SmlMat33* smlMat33Cofactors(struct SmlMat33 const* const matrix, struct SmlMat33 *const destination);
-struct SmlVec2* smlMat33Eigenvalues(struct SmlMat33 const *const matrix, struct SmlVec2 *const destination);
-struct SmlMat33* smlMat33Transpose(struct SmlMat33 const *const matrix, struct SmlMat33 *const destination);
-// struct SmlMat33* smlMat33Rotate(struct SmlMat33 const *const matrix, float angle, struct SmlMat33 *const destination);
 struct SmlMat33* smlMat33AddScalar(struct SmlMat33 const *const matrix, float const scalar, struct SmlMat33 *const destination);
 struct SmlMat33* smlMat33DivScalar(struct SmlMat33 const *const matrix, float const scalar, struct SmlMat33 *const destination);
 struct SmlMat33* smlMat33SubScalar(struct SmlMat33 const *const matrix, float const scalar, struct SmlMat33 *const destination);
 struct SmlMat33* smlMat33MultScalar(struct SmlMat33 const *const matrix, float const scalar, struct SmlMat33 *const destination);
-struct SmlMat33* smlMat33RowAdd(struct SmlMat33 const *const matrix, int rowIndex, float scalar, struct SmlMat33 *const destination);
 struct SmlMat33* smlMat33Sub(struct SmlMat33 const *const first, struct SmlMat33 const *const second, struct SmlMat33 *const destination);
 struct SmlMat33* smlMat33Add(struct SmlMat33 const *const first, struct SmlMat33 const *const second, struct SmlMat33 *const destination);
-struct SmlMat33* smlMat33Mult(struct SmlMat33 const *const first, struct SmlMat33 const *const second, struct SmlMat33 *const destination);
-struct SmlVec3* smlMat33MultVec2(struct SmlMat33 const *const matrix, struct SmlVec3 const *const vector, struct SmlVec2 *const destination);
 struct SmlMat33* smlMat33DivMembers(struct SmlMat33 const *const first, struct SmlMat33 const *const second, struct SmlMat33 *const destination);
+struct SmlMat33* smlMat33Mult(struct SmlMat33 const *const first, struct SmlMat33 const *const second, struct SmlMat33 *const destination);
 struct SmlMat33* smlMat33MultMembers(struct SmlMat33 const *const first, struct SmlMat33 const *const second, struct SmlMat33 *const destination);
 struct SmlMat33* smlMat33InvertGivenInvertedDeterminant(struct SmlMat33 const *const matrix, struct SmlMat33 *const destination, float invertedDeterminant);
 #pragma endregion
 
 #pragma region 4 * 4 Matrices.
-int smlMat44Rank(struct SmlMat44 const *const matrix);
-float smlMat44Trace(struct SmlMat44 const *const matrix);
-char smlMat44IsSymmetric(struct SmlMat44 const *const matrix);
 float smlMat44Determinant(struct SmlMat44 const *const matrix);
 struct SmlMat44* smlMat44Identity(struct SmlMat44 *const destination);
-int smlMat44TraceDeterminantIdentityCheck(struct SmlMat44 const *const matrix);
 float smlMat44Invert(struct SmlMat44 const *const matrix, struct SmlMat44 *const destination);
 float smlMat44InvertUnchecked(struct SmlMat44 const *const matrix, struct SmlMat44 *const destination);
 struct SmlMat44* smlMat44Cofactors(struct SmlMat44 const* const matrix, struct SmlMat44 *const destination);
-struct SmlVec2* smlMat44Eigenvalues(struct SmlMat44 const *const matrix, struct SmlVec2 *const destination);
-struct SmlMat44* smlMat44Transpose(struct SmlMat44 const *const matrix, struct SmlMat44 *const destination);
-struct SmlMat44* smlMat44Rotate(struct SmlMat44 const *const matrix, float angle, struct SmlMat44 *const destination);
 struct SmlMat44* smlMat44AddScalar(struct SmlMat44 const *const matrix, float const scalar, struct SmlMat44 *const destination);
 struct SmlMat44* smlMat44DivScalar(struct SmlMat44 const *const matrix, float const scalar, struct SmlMat44 *const destination);
 struct SmlMat44* smlMat44SubScalar(struct SmlMat44 const *const matrix, float const scalar, struct SmlMat44 *const destination);
 struct SmlMat44* smlMat44MultScalar(struct SmlMat44 const *const matrix, float const scalar, struct SmlMat44 *const destination);
-struct SmlMat44* smlMat44RowAdd(struct SmlMat44 const *const matrix, int rowIndex, float scalar, struct SmlMat44 *const destination);
 struct SmlMat44* smlMat44Add(struct SmlMat44 const *const first, struct SmlMat44 const *const second, struct SmlMat44 *const destination);
 struct SmlMat44* smlMat44Sub(struct SmlMat44 const *const first, struct SmlMat44 const *const second, struct SmlMat44 *const destination);
 struct SmlMat44* smlMat44Mult(struct SmlMat44 const *const first, struct SmlMat44 const *const second, struct SmlMat44 *const destination);
-struct SmlVec2* smlMat44MultVec2(struct SmlMat44 const *const matrix, struct SmlVec2 const *const vector, struct SmlVec2 *const destination);
 struct SmlMat44* smlMat44DivMembers(struct SmlMat44 const *const first, struct SmlMat44 const *const second, struct SmlMat44 *const destination);
 struct SmlMat44* smlMat44MultMembers(struct SmlMat44 const *const first, struct SmlMat44 const *const second, struct SmlMat44 *const destination);
 struct SmlMat44* smlMat44InvertGivenInvertedDeterminant(struct SmlMat44 const *const matrix, struct SmlMat44 *const destination, float invertedDeterminant);
