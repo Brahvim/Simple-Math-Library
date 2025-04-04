@@ -23,6 +23,28 @@ inline float smlMat44Determinant(struct SmlMat44 const *const p_matrix) {
 			(p_matrix->r34 * ((p_matrix->r42 * p_matrix->r42) - (p_matrix->r43 * p_matrix->r41)))));
 }
 
+inline struct SmlMat44* smlMat44AdjugateSame(struct SmlMat44 *const p_matrix) {
+	struct SmlMat44 cof;
+	smlMat44Cofactors(p_matrix, &cof);
+	smlMat44SwapMajorityToNew(&cof, p_matrix);
+	return p_matrix;
+}
+
+inline struct SmlMat44* smlMat44SwapMajority(struct SmlMat44 *const p_matrix) {
+	float temp;
+
+	temp = p_matrix->r12;  p_matrix->r12 = p_matrix->r21;  p_matrix->r21 = temp;
+	temp = p_matrix->r13;  p_matrix->r13 = p_matrix->r31;  p_matrix->r31 = temp;
+	temp = p_matrix->r14;  p_matrix->r14 = p_matrix->r41;   p_matrix->r41 = temp;
+
+	temp = p_matrix->r23;  p_matrix->r23 = p_matrix->r32;  p_matrix->r32 = temp;
+	temp = p_matrix->r24;  p_matrix->r24 = p_matrix->r42;  p_matrix->r42 = temp;
+
+	temp = p_matrix->r34;  p_matrix->r34 = p_matrix->r43;  p_matrix->r43 = temp;
+
+	return p_matrix;
+}
+
 inline struct SmlMat44* smlMat44Identity(struct SmlMat44 *const p_destination) {
 	p_destination->r11 = 1;
 	p_destination->r12 = 0;
@@ -58,10 +80,37 @@ inline float smlMat44Invert(struct SmlMat44 const *const p_matrix, struct SmlMat
 	return det;
 }
 
+inline struct SmlMat44* smlMat44Adjugate(struct SmlMat44 *const p_matrix, struct SmlMat44 *const p_destination) {
+	smlMat44Cofactors(p_matrix, p_destination);
+	smlMat44SwapMajority(p_destination);
+	return p_destination;
+}
+
 inline float smlMat44InvertUnchecked(struct SmlMat44 const *const p_matrix, struct SmlMat44 *const p_destination) {
 	float const det = smlMat44Determinant(p_matrix);
 	smlMat44InvertGivenInvertedDeterminant(p_matrix, p_destination, 1.0f / det);
 	return det;
+}
+
+inline struct SmlMat44* smlMat44Copy(struct SmlMat44 const *const p_matrix, struct SmlMat44 *const p_destination) {
+	p_destination->r11 = p_matrix->r11;
+	p_destination->r12 = p_matrix->r12;
+	p_destination->r13 = p_matrix->r13;
+	p_destination->r14 = p_matrix->r14;
+	p_destination->r21 = p_matrix->r21;
+	p_destination->r22 = p_matrix->r22;
+	p_destination->r23 = p_matrix->r23;
+	p_destination->r24 = p_matrix->r24;
+	p_destination->r31 = p_matrix->r31;
+	p_destination->r32 = p_matrix->r32;
+	p_destination->r33 = p_matrix->r33;
+	p_destination->r34 = p_matrix->r34;
+	p_destination->r41 = p_matrix->r41;
+	p_destination->r42 = p_matrix->r42;
+	p_destination->r43 = p_matrix->r43;
+	p_destination->r44 = p_matrix->r44;
+
+	return p_destination;
 }
 
 inline struct SmlMat44* smlMat44Cofactors(struct SmlMat44 const* const p_matrix, struct SmlMat44 *const p_destination) {
@@ -121,7 +170,13 @@ inline struct SmlMat44* smlMat44Cofactors(struct SmlMat44 const* const p_matrix,
 	return p_destination;
 }
 
-struct SmlMat44* smlMat44AddScalar(struct SmlMat44 const *const p_matrix, float const p_scalar, struct SmlMat44 *const p_destination) {
+inline struct SmlMat44* smlMat44SwapMajorityToNew(struct SmlMat44 *const p_matrix, struct SmlMat44 *const p_destination) {
+	smlMat44Copy(p_matrix, p_destination);
+	smlMat44SwapMajority(p_destination);
+	return p_destination;
+}
+
+inline struct SmlMat44* smlMat44AddScalar(struct SmlMat44 const *const p_matrix, float const p_scalar, struct SmlMat44 *const p_destination) {
 	p_destination->r11 = p_matrix->r11 + p_scalar;
 	p_destination->r12 = p_matrix->r12 + p_scalar;
 	p_destination->r13 = p_matrix->r13 + p_scalar;
@@ -142,7 +197,7 @@ struct SmlMat44* smlMat44AddScalar(struct SmlMat44 const *const p_matrix, float 
 	return p_destination;
 }
 
-struct SmlMat44* smlMat44DivScalar(struct SmlMat44 const *const p_matrix, float const p_scalar, struct SmlMat44 *const p_destination) {
+inline struct SmlMat44* smlMat44DivScalar(struct SmlMat44 const *const p_matrix, float const p_scalar, struct SmlMat44 *const p_destination) {
 	p_destination->r11 = p_matrix->r11 / p_scalar;
 	p_destination->r12 = p_matrix->r12 / p_scalar;
 	p_destination->r13 = p_matrix->r13 / p_scalar;
@@ -163,7 +218,7 @@ struct SmlMat44* smlMat44DivScalar(struct SmlMat44 const *const p_matrix, float 
 	return p_destination;
 }
 
-struct SmlMat44* smlMat44SubScalar(struct SmlMat44 const *const p_matrix, float const p_scalar, struct SmlMat44 *const p_destination) {
+inline struct SmlMat44* smlMat44SubScalar(struct SmlMat44 const *const p_matrix, float const p_scalar, struct SmlMat44 *const p_destination) {
 	p_destination->r11 = p_matrix->r11 - p_scalar;
 	p_destination->r12 = p_matrix->r12 - p_scalar;
 	p_destination->r13 = p_matrix->r13 - p_scalar;
@@ -184,7 +239,7 @@ struct SmlMat44* smlMat44SubScalar(struct SmlMat44 const *const p_matrix, float 
 	return p_destination;
 }
 
-struct SmlMat44* smlMat44MultScalar(struct SmlMat44 const *const p_matrix, float const p_scalar, struct SmlMat44 *const p_destination) {
+inline struct SmlMat44* smlMat44MultScalar(struct SmlMat44 const *const p_matrix, float const p_scalar, struct SmlMat44 *const p_destination) {
 	p_destination->r11 = p_matrix->r11 * p_scalar;
 	p_destination->r12 = p_matrix->r12 * p_scalar;
 	p_destination->r13 = p_matrix->r13 * p_scalar;

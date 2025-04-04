@@ -7,6 +7,19 @@ inline float smlMat22Determinant(struct SmlMat22 const *const p_matrix) {
 	return (p_matrix->r11 * p_matrix->r22) - (p_matrix->r12 * p_matrix->r21);
 }
 
+inline struct SmlMat22* smlMat22AdjugateSame(struct SmlMat22 *const p_matrix) {
+	struct SmlMat22 cof;
+	smlMat22Cofactors(p_matrix, &cof);
+	return smlMat22SwapMajorityToNew(&cof, p_matrix);
+}
+
+inline struct SmlMat22* smlMat22SwapMajority(struct SmlMat22 *const p_matrix) {
+	float const temp = p_matrix->r12;
+	p_matrix->r12 = p_matrix->r21;
+	p_matrix->r21 = temp;
+	return p_matrix;
+}
+
 inline struct SmlMat22* smlMat22Identity(struct SmlMat22 *const p_destination) {
 	p_destination->r11 = 1;
 	p_destination->r12 = 0;
@@ -30,10 +43,25 @@ inline float smlMat22Invert(struct SmlMat22 const *const p_matrix, struct SmlMat
 	return det;
 }
 
+inline struct SmlMat22* smlMat22Adjugate(struct SmlMat22 *const p_matrix, struct SmlMat22 *const p_destination) {
+	smlMat22Cofactors(p_matrix, p_destination);
+	smlMat22SwapMajority(p_destination);
+	return p_destination;
+}
+
 inline float smlMat22InvertUnchecked(struct SmlMat22 const *const p_matrix, struct SmlMat22 *const p_destination) {
 	float const det = smlMat22Determinant(p_matrix);
 	smlMat22InvertGivenInvertedDeterminant(p_matrix, p_destination, 1.0f / det);
 	return det;
+}
+
+inline struct SmlMat22* smlMat22Copy(struct SmlMat22 const *const p_matrix, struct SmlMat22 *const p_destination) {
+	p_destination->x = p_matrix->x;
+	p_destination->y = p_matrix->y;
+	p_destination->z = p_matrix->z;
+	p_destination->w = p_matrix->w;
+
+	return p_destination;
 }
 
 inline struct SmlMat22* smlMat22Cofactors(struct SmlMat22 const* const p_matrix, struct SmlMat22 *const p_destination) {
@@ -45,7 +73,13 @@ inline struct SmlMat22* smlMat22Cofactors(struct SmlMat22 const* const p_matrix,
 	return p_destination;
 }
 
-struct SmlMat22* smlMat22AddScalar(struct SmlMat22 const *const p_matrix, float const p_scalar, struct SmlMat22 *const p_destination) {
+inline struct SmlMat22* smlMat22SwapMajorityToNew(struct SmlMat22 *const p_matrix, struct SmlMat22 *const p_destination) {
+	smlMat22Copy(p_matrix, p_destination);
+	smlMat22SwapMajority(p_destination);
+	return p_destination;
+}
+
+inline struct SmlMat22* smlMat22AddScalar(struct SmlMat22 const *const p_matrix, float const p_scalar, struct SmlMat22 *const p_destination) {
 	p_destination->r11 = p_matrix->r11 + p_scalar;
 	p_destination->r12 = p_matrix->r12 + p_scalar;
 	p_destination->r21 = p_matrix->r21 + p_scalar;
@@ -54,7 +88,7 @@ struct SmlMat22* smlMat22AddScalar(struct SmlMat22 const *const p_matrix, float 
 	return p_destination;
 }
 
-struct SmlMat22* smlMat22DivScalar(struct SmlMat22 const *const p_matrix, float const p_scalar, struct SmlMat22 *const p_destination) {
+inline struct SmlMat22* smlMat22DivScalar(struct SmlMat22 const *const p_matrix, float const p_scalar, struct SmlMat22 *const p_destination) {
 	p_destination->r11 = p_matrix->r11 / p_scalar;
 	p_destination->r12 = p_matrix->r12 / p_scalar;
 	p_destination->r21 = p_matrix->r21 / p_scalar;
@@ -63,7 +97,7 @@ struct SmlMat22* smlMat22DivScalar(struct SmlMat22 const *const p_matrix, float 
 	return p_destination;
 }
 
-struct SmlMat22* smlMat22SubScalar(struct SmlMat22 const *const p_matrix, float const p_scalar, struct SmlMat22 *const p_destination) {
+inline struct SmlMat22* smlMat22SubScalar(struct SmlMat22 const *const p_matrix, float const p_scalar, struct SmlMat22 *const p_destination) {
 	p_destination->r11 = p_matrix->r11 - p_scalar;
 	p_destination->r12 = p_matrix->r12 - p_scalar;
 	p_destination->r21 = p_matrix->r21 - p_scalar;
@@ -72,7 +106,7 @@ struct SmlMat22* smlMat22SubScalar(struct SmlMat22 const *const p_matrix, float 
 	return p_destination;
 }
 
-struct SmlMat22* smlMat22MultScalar(struct SmlMat22 const *const p_matrix, float const p_scalar, struct SmlMat22 *const p_destination) {
+inline struct SmlMat22* smlMat22MultScalar(struct SmlMat22 const *const p_matrix, float const p_scalar, struct SmlMat22 *const p_destination) {
 	p_destination->r11 = p_matrix->r11 * p_scalar;
 	p_destination->r12 = p_matrix->r12 * p_scalar;
 	p_destination->r21 = p_matrix->r21 * p_scalar;
