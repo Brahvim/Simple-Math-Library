@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <memory.h>
 
-#include "library/library.h"
+#include "library/sml.h"
 
 int main(int const p_count, char *p_values[]) {
 	float arr[] = { 1, 2, 3, 4, };

@@ -1,8 +1,8 @@
 #include <math.h>
 #include <float.h>
 
-#include "internals/ifs.h"
-#include "library/library.h"
+#include "ifs.h"
+#include "library/sml.h"
 
 #pragma region `float` casts.
 inline struct SmlVec2 smlVec2(float const *const p_array) {

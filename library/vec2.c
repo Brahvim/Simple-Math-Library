@@ -1,7 +1,7 @@
 #include <math.h>
 
-#include "internals/ifs.h"
-#include "library/library.h"
+#include "ifs.h"
+#include "library/sml.h"
 
 inline float smlVec2Direction(struct SmlVec2 const *p_vector) {
 	return atan2f(p_vector->y, p_vector->x);

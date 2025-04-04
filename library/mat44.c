@@ -1,7 +1,7 @@
 #include <math.h>
 
-#include "internals/ifs.h"
-#include "library/library.h"
+#include "ifs.h"
+#include "library/sml.h"
 
 inline float smlMat44Determinant(struct SmlMat44 const *const p_matrix) {
 	return

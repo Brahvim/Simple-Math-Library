@@ -1,7 +1,7 @@
 #include <math.h>
 
-#include "internals/ifs.h"
-#include "library/library.h"
+#include "ifs.h"
+#include "library/sml.h"
 
 inline float smlMat22Determinant(struct SmlMat22 const *const p_matrix) {
 	return (p_matrix->r11 * p_matrix->r22) - (p_matrix->r12 * p_matrix->r21);

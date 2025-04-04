@@ -1,7 +1,7 @@
 #include <math.h>
 
-#include "internals/ifs.h"
-#include "library/library.h"
+#include "ifs.h"
+#include "library/sml.h"
 
 inline float smlQuatMagnitude(struct SmlQuat const *const p_quaternion) {
 	return __builtin_sqrtf(smlQuatMagnitudeSquared(p_quaternion));
