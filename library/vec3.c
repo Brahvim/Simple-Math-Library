@@ -53,6 +53,13 @@ inline struct SmlVec3* smlVec3Normalize(struct SmlVec3 const *p_vector, struct S
 	return p_destination;
 }
 
+inline struct SmlVec3* smlVec3Set(struct SmlVec3 *const p_vector, float const p_x, float const p_y, float const p_z) {
+	p_vector->x = p_x;
+	p_vector->y = p_y;
+	p_vector->z = p_z;
+	return p_vector;
+}
+
 inline struct SmlVec3* smlVec3NormalizeUnchecked(struct SmlVec3 const *p_vector, struct SmlVec3 *const p_destination) {
 	float const magInv = 1.0f / smlVec3Magnitude(p_vector);
 

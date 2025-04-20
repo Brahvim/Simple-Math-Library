@@ -39,6 +39,12 @@ inline float smlVec2Dot(struct SmlVec2 const *const p_first, struct SmlVec2 cons
 	return p_first->x * p_second->x + p_first->y * p_second->y;
 }
 
+inline struct SmlVec2* smlVec2Set(struct SmlVec2 *const p_vector, float const p_x, float const p_y) {
+	p_vector->x = p_x;
+	p_vector->y = p_y;
+	return p_vector;
+}
+
 inline struct SmlVec2* smlVec2Normalize(struct SmlVec2 const *p_vector, struct SmlVec2 *const p_destination) {
 	float mag = smlVec2MagnitudeSquared(p_vector);
 	mag = mag == 0.0 ? 1 : __builtin_sqrtf(mag);

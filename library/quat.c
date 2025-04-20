@@ -213,6 +213,14 @@ inline struct SmlQuat* smlQuatScale(struct SmlQuat const *const p_quaternion, fl
 	return smlQuatMultScalar(p_quaternion, p_scalar, p_destination);
 }
 
+inline struct SmlQuat* smlQuatSet(struct SmlQuat *const p_quaternion, float const p_x, float const p_y, float const p_z, float const p_w) {
+	p_quaternion->x = p_x;
+	p_quaternion->y = p_y;
+	p_quaternion->z = p_z;
+	p_quaternion->w = p_w;
+	return p_quaternion;
+}
+
 inline struct SmlQuat* smlQuatMultScalar(struct SmlQuat const *const p_quaternion, float const p_scalar, struct SmlQuat *const p_destination) {
 	p_destination->x *= p_scalar;
 	p_destination->y *= p_scalar;
