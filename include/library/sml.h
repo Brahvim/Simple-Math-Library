@@ -63,11 +63,15 @@ struct SmlVec3 {
 
 			};
 
-			float z;
-			float k;
-			float b;
-			float l;
-			float v;
+			union {
+
+				float z;
+				float k;
+				float b;
+				float l;
+				float v;
+
+			};
 
 		};
 
@@ -81,23 +85,23 @@ struct SmlQuat {
 
 		float data[4];
 
-		struct {
+		union {
 
-			union {
+			struct SmlVec3 vec3;
 
-				struct SmlVec3 vec3;
+			struct {
 
-				struct {
+				union {
 
-					union {
+					struct SmlVec2 vec2;
+					struct { float x, y; };
+					struct { float i, j; };
+					struct { float r, g; };
+					struct { float h, s; };
 
-						struct SmlVec2 vec2;
-						struct { float x, y; };
-						struct { float i, j; };
-						struct { float r, g; };
-						struct { float h, s; };
+				};
 
-					};
+				union {
 
 					float z;
 					float k;
@@ -109,9 +113,9 @@ struct SmlQuat {
 
 			};
 
-			union { float a;  float w; };
-
 		};
+
+		union { float a;  float w; };
 
 	};
 
@@ -132,8 +136,8 @@ struct SmlMat22 {
 
 		struct {
 
-			union { struct SmlVec2 col1; struct { float c11, c12; }; };
-			union { struct SmlVec2 col2; struct { float c21, c22; }; };
+			union { struct SmlVec2 col1; struct { float c11, c21; }; };
+			union { struct SmlVec2 col2; struct { float c12, c22; }; };
 
 		};
 
@@ -160,9 +164,9 @@ struct SmlMat33 {
 
 		struct {
 
-			union { struct SmlVec3 col1; struct { float c00, c10, c20; }; };
-			union { struct SmlVec3 col2; struct { float c01, c11, c21; }; };
-			union { struct SmlVec3 col3; struct { float c02, c12, c22; }; };
+			union { struct SmlVec3 col1; struct { float c11, c21, c31; }; };
+			union { struct SmlVec3 col2; struct { float c12, c22, c32; }; };
+			union { struct SmlVec3 col3; struct { float c13, c23, c33; }; };
 
 		};
 
@@ -178,7 +182,7 @@ struct SmlMat33 {
 
 		float two[3][3];
 
-		struct SmlMat22 m22;
+		struct SmlMat22 mat22;
 
 	};
 
@@ -188,21 +192,29 @@ struct SmlMat44 {
 
 	union {
 
+		// Col-quats:
+		struct { struct SmlQuat col1, col2, col3, col4; };
+
+		// Row-quats:
+		struct { struct SmlQuat row1, row2, row3, row4; };
+
+		// Col-floats:
 		struct {
 
-			union { struct SmlQuat col1; struct { float c00, c10, c20, c30; }; };
-			union { struct SmlQuat col2; struct { float c01, c11, c21, c31; }; };
-			union { struct SmlQuat col3; struct { float c02, c12, c22, c32; }; };
-			union { struct SmlQuat col4; struct { float c03, c13, c23, c33; }; };
+			float c11, c21, c31, c41;
+			float c12, c22, c32, c42;
+			float c13, c23, c33, c43;
+			float c14, c24, c34, c44;
 
 		};
 
+		// Row-floats:
 		struct {
 
-			union { struct SmlQuat row1; struct { float r11, r12, r13, r14; }; };
-			union { struct SmlQuat row2; struct { float r21, r22, r23, r24; }; };
-			union { struct SmlQuat row3; struct { float r31, r32, r33, r34; }; };
-			union { struct SmlQuat row4; struct { float r41, r42, r43, r44; }; };
+			float r11, r12, r13, r14;
+			float r21, r22, r23, r24;
+			float r31, r32, r33, r34;
+			float r41, r42, r43, r44;
 
 		};
 
