@@ -4,7 +4,7 @@
 #include "ifs.h"
 #include "library/sml.h"
 
-#pragma region `float` casts.
+#pragma region // `float` casts.
 inline struct SmlVec2 smlVec2(float const *const p_array) {
 	return (struct SmlVec2) { p_array[0], p_array[1], };
 }

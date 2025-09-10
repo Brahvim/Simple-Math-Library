@@ -44,34 +44,37 @@ inline struct SmlQuat* smlQuatFromMatrix33(struct SmlMat33 const *p_matrix, stru
 		p_quaternion->z = (p_matrix->r21 - p_matrix->r12) * sInv;
 		p_quaternion->w = s * 0.25f;
 
-	} else { // TODO: Figure out how to lower branches if one *actually* can...
+	}
+ else { // TODO: Figure out how to lower branches if one *actually* can...
 
-		ifu(p_matrix->r11 > p_matrix->r22 && p_matrix->r11 > p_matrix->r33) {
+	 ifu(p_matrix->r11 > p_matrix->r22 && p_matrix->r11 > p_matrix->r33) {
 
-			float const s = 2.0f * __builtin_sqrtf(1.0f + p_matrix->r11 - p_matrix->r22 - p_matrix->r33);
-			float const sInv = 1.0f / s;
-			p_quaternion->x = s * 0.25f;
-			p_quaternion->y = (p_matrix->r12 + p_matrix->r21) * sInv;
-			p_quaternion->z = (p_matrix->r13 + p_matrix->r31) * sInv;
-			p_quaternion->w = (p_matrix->r32 - p_matrix->r23) * sInv;
+		 float const s = 2.0f * __builtin_sqrtf(1.0f + p_matrix->r11 - p_matrix->r22 - p_matrix->r33);
+		 float const sInv = 1.0f / s;
+		 p_quaternion->x = s * 0.25f;
+		 p_quaternion->y = (p_matrix->r12 + p_matrix->r21) * sInv;
+		 p_quaternion->z = (p_matrix->r13 + p_matrix->r31) * sInv;
+		 p_quaternion->w = (p_matrix->r32 - p_matrix->r23) * sInv;
 
-		} else ifu(p_matrix->r22 > p_matrix->r33) {
+	 }
+ else ifu(p_matrix->r22 > p_matrix->r33) {
 
-			float const s = 2.0f * __builtin_sqrtf(1.0f + p_matrix->r22 - p_matrix->r11 - p_matrix->r33);
-			float const sInv = 1.0f / s;
-			p_quaternion->x = (p_matrix->r12 + p_matrix->r21) * sInv;
-			p_quaternion->y = s * 0.25f;
-			p_quaternion->z = (p_matrix->r23 + p_matrix->r32) * sInv;
-			p_quaternion->w = (p_matrix->r13 - p_matrix->r31) * sInv;
+	 float const s = 2.0f * __builtin_sqrtf(1.0f + p_matrix->r22 - p_matrix->r11 - p_matrix->r33);
+	 float const sInv = 1.0f / s;
+	 p_quaternion->x = (p_matrix->r12 + p_matrix->r21) * sInv;
+	 p_quaternion->y = s * 0.25f;
+	 p_quaternion->z = (p_matrix->r23 + p_matrix->r32) * sInv;
+	 p_quaternion->w = (p_matrix->r13 - p_matrix->r31) * sInv;
 
-		} else {
+		}
+ else {
 
-			float const s = 2.0f * __builtin_sqrtf(1.0f + p_matrix->r33 - p_matrix->r11 - p_matrix->r22);
-			float const sInv = 1.0f / s;
-			p_quaternion->x = (p_matrix->r13 + p_matrix->r31) * sInv;
-			p_quaternion->y = (p_matrix->r23 + p_matrix->r32) * sInv;
-			p_quaternion->z = s * 0.25f;
-			p_quaternion->w = (p_matrix->r21 - p_matrix->r12) * sInv;
+	 float const s = 2.0f * __builtin_sqrtf(1.0f + p_matrix->r33 - p_matrix->r11 - p_matrix->r22);
+	 float const sInv = 1.0f / s;
+	 p_quaternion->x = (p_matrix->r13 + p_matrix->r31) * sInv;
+	 p_quaternion->y = (p_matrix->r23 + p_matrix->r32) * sInv;
+	 p_quaternion->z = s * 0.25f;
+	 p_quaternion->w = (p_matrix->r21 - p_matrix->r12) * sInv;
 
 		}
 
@@ -177,16 +180,7 @@ inline struct SmlQuat* smlQuatConjugate(struct SmlQuat const *const p_quaternion
 
 inline struct SmlQuat* smlQuatNormalize(struct SmlQuat const *const p_quaternion, struct SmlQuat *const p_destination) {
 	float magSq = smlQuatMagnitudeSquared(p_quaternion);
-
-	ifu(magSq == 0.0f) {
-
-		magSq = 1;
-
-	} else {
-
-		magSq = __builtin_sqrtf(magSq);
-
-	}
+	magSq = magSq == 0.0 ? 1 : __builtin_sqrtf(magSq);
 
 	float const magSqInv = 1.0f / magSq;
 	p_destination->x = p_quaternion->x * magSqInv;
@@ -343,9 +337,10 @@ inline struct SmlQuat* smlQuatSlerp(struct SmlQuat const *const p_source, struct
 		target.z = -p_target->z;
 		target.w = -p_target->w;
 
-	} else {
+	}
+ else {
 
-		target = *p_target;
+	 target = *p_target;
 
 	}
 

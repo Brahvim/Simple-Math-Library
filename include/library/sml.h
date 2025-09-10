@@ -32,14 +32,10 @@ struct SmlVec2 {
 	union {
 
 		float data[2];
-
 		struct { float x, y; };
-
 		struct { float i, j; };
-
 		struct { float u, v; };
-
-		struct { float s, t; };
+		struct { float h, s; };
 
 	};
 
@@ -68,7 +64,6 @@ struct SmlVec3 {
 				float z;
 				float k;
 				float b;
-				float l;
 				float v;
 
 			};
@@ -85,37 +80,45 @@ struct SmlQuat {
 
 		float data[4];
 
-		union {
+		struct {
 
-			struct SmlVec3 vec3;
+			union {
 
-			struct {
-
-				union {
-
-					struct SmlVec2 vec2;
-					struct { float x, y; };
-					struct { float i, j; };
-					struct { float r, g; };
-					struct { float h, s; };
-
-				};
+				struct SmlVec3 vec3;
 
 				union {
 
-					float z;
-					float k;
-					float b;
-					float l;
-					float v;
+					struct {
+
+						union {
+
+							struct SmlVec2 vec2;
+							struct { float x, y; };
+							struct { float i, j; };
+							struct { float r, g; };
+							struct { float h, s; };
+
+						};
+
+						union {
+
+							float z;
+							float k;
+							float b;
+							float v;
+
+						};
+
+					};
 
 				};
 
 			};
 
+			union { float a; float l; float w; };
+
 		};
 
-		union { float a;  float w; };
 
 	};
 
@@ -229,7 +232,7 @@ struct SmlMat44 {
 };
 #pragma endregion
 
-#pragma region `float` casts.
+#pragma region // `float` casts.
 // Copier functions!:
 struct SmlVec2 smlVec2(float const *const array);
 struct SmlVec3 smlVec3(float const *const array);
