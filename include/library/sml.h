@@ -1,29 +1,29 @@
 #pragma once
 
 #pragma region Macros.
-#define SML_180_OVER_PI 57.29577951308232
-#define SML_PI_OVER_180 0.017453292519943295
-
-#define SML_DEGREES(radians) SML_180_OVER_PI * (radians)
-#define SML_RADIANS(degrees) SML_PI_OVER_180 * (degrees)
-
 #define SML_PI 3.141592653589793
 #define SML_TAU 6.283185307179586
 #define SML_PI_HALF 1.5707963267948966
 #define SML_PI_THIRD 1.0471975511965976
 #define SML_PI_QUART 0.7853981633974483
 
+#define SML_180_OVER_PI 57.29577951308232
+#define SML_PI_OVER_180 0.017453292519943
+
 // 12.5%
-#define SML_PI_EIGHTH 0.39269908169872414
+#define SML_PI_EIGHTH 0.39269908169872
 
 // 6.25%
-#define SML_PI_SIXTEENTH 0.19634954084936207
+#define SML_PI_SIXTEENTH 0.19634954084936
 
 // 66.666666%
-#define SML_PI_TWO_THIRDS 2.0943951023931953
+#define SML_PI_TWO_THIRDS 2.09439510239319
 
 // 75%
-#define SML_PI_THREE_FOURTHS 2.356194490192345
+#define SML_PI_THREE_FOURTHS 2.35619449019234
+
+#define SML_DEGREES(radians) SML_180_OVER_PI * (radians)
+#define SML_RADIANS(degrees) SML_PI_OVER_180 * (degrees)
 #pragma endregion
 
 #pragma region Structures.
@@ -232,7 +232,7 @@ struct SmlMat44 {
 };
 #pragma endregion
 
-#pragma region // `float` casts.
+#pragma region From-array.
 // Copier functions!:
 struct SmlVec2 smlVec2(float const *const array);
 struct SmlVec3 smlVec3(float const *const array);
@@ -246,6 +246,9 @@ char smlFloatCompare(float const first, float const second, float epsilon);
 #pragma endregion
 
 #pragma region 2 * 2 Matrices.
+#define smlMat22Val(...) ((struct SmlMat22) { __VA_ARGS__ })
+#define smlMat22Ptr(...) ((struct SmlMat22*) { __VA_ARGS__ })
+
 float smlMat22Determinant(struct SmlMat22 const *const matrix);
 struct SmlMat22* smlMat22AdjugateSame(struct SmlMat22 *const matrix);
 struct SmlMat22* smlMat22SwapMajority(struct SmlMat22 *const matrix);
@@ -270,6 +273,9 @@ struct SmlMat22* smlMat22InvertGivenInvertedDeterminant(struct SmlMat22 const *c
 #pragma endregion
 
 #pragma region 3 * 3 Matrices.
+#define smlMat33Val(...) ((struct SmlMat33) { __VA_ARGS__ })
+#define smlMat33Ptr(...) ((struct SmlMat33*) { __VA_ARGS__ })
+
 float smlMat33Determinant(struct SmlMat33 const *const matrix);
 struct SmlMat33* smlMat33AdjugateSame(struct SmlMat33 *const matrix);
 struct SmlMat33* smlMat33SwapMajority(struct SmlMat33 *const matrix);
@@ -300,6 +306,9 @@ struct SmlMat33* smlMat33InvertGivenInvertedDeterminant(struct SmlMat33 const *c
 #pragma endregion
 
 #pragma region 4 * 4 Matrices.
+#define smlMat44Val(...) ((struct SmlMat44) { __VA_ARGS__ })
+#define smlMat44Ptr(...) ((struct SmlMat44*) { __VA_ARGS__ })
+
 float smlMat44Determinant(struct SmlMat44 const *const matrix);
 struct SmlMat44* smlMat44AdjugateSame(struct SmlMat44 *const matrix);
 struct SmlMat44* smlMat44SwapMajority(struct SmlMat44 *const matrix);
@@ -325,6 +334,9 @@ struct SmlMat44* smlMat44InvertGivenInvertedDeterminant(struct SmlMat44 const *c
 #pragma endregion
 
 #pragma region Two-dimensional vectors.
+#define smlVec2Val(...) ((struct SmlVec2) { __VA_ARGS__ })
+#define smlVec2Ptr(...) ((struct SmlVec2*) { __VA_ARGS__ })
+
 float smlVec2Direction(struct SmlVec2 const *vector);
 float smlVec2Magnitude(struct SmlVec2 const *vector);
 struct SmlVec2* smlVec2One(struct SmlVec2 *const vector);
@@ -344,6 +356,9 @@ struct SmlVec3* smlVec2Cross(struct SmlVec2 const *const first, struct SmlVec2 c
 #pragma endregion
 
 #pragma region Three-dimensional vectors.
+#define smlVec3Val(...) ((struct SmlVec3) { __VA_ARGS__ })
+#define smlVec3Ptr(...) ((struct SmlVec3*) { __VA_ARGS__ })
+
 float smlVec3Direction2d(struct SmlVec3* vector);
 float smlVec3Magnitude(struct SmlVec3 const *vector);
 struct SmlVec3* smlVec3One(struct SmlVec3 *const vector);
@@ -364,6 +379,9 @@ struct SmlVec3* smlVec3Cross(struct SmlVec3 const *const first, struct SmlVec3 c
 #pragma endregion
 
 #pragma region Quaternions (four-dimensional vectors!).
+#define smlQuatVal(...) ((struct SmlQuat) { __VA_ARGS__ })
+#define smlQuatPtr(...) ((struct SmlQuat*) { __VA_ARGS__ })
+
 float smlQuatMagnitude(struct SmlQuat const *const quaternion);
 struct SmlQuat* smlQuatIdentity(struct SmlQuat *const destination);
 float smlQuatMagnitudeSquared(struct SmlQuat const *const quaternion);
@@ -377,9 +395,9 @@ struct SmlQuat* smlQuatNormalize(struct SmlQuat const *const quaternion, struct 
 struct SmlQuat* smlQuatNormalizeUnchecked(struct SmlQuat const *const quaternion, struct SmlQuat *const destination);
 struct SmlQuat* smlQuatSet(struct SmlQuat *const quaternion, float const x, float const y, float const z, float const w);
 struct SmlQuat* smlQuatScale(struct SmlQuat const *const quaternion, float const scalar, struct SmlQuat *const destination);
+struct SmlQuat* smlQuatMultScalar(struct SmlQuat const *const first, float const scalar, struct SmlQuat *const destination);
 struct SmlQuat* smlQuatFromAxisAngle(struct SmlVec3 const *const axisVector, float const angle, struct SmlQuat *const destination);
 struct SmlQuat* smlQuatScaleUnchecked(struct SmlQuat const *const quaternion, float const scalar, struct SmlQuat *const destination);
-struct SmlQuat* smlQuatMultScalar(struct SmlQuat const *const first, float const scalar, struct SmlQuat *const destination);
 struct SmlQuat* smlQuatAdd(struct SmlQuat const *const first, struct SmlQuat const *const second, struct SmlQuat *const destination);
 struct SmlQuat* smlQuatSub(struct SmlQuat const *const first, struct SmlQuat const *const second, struct SmlQuat *const destination);
 struct SmlQuat* smlQuatMult(struct SmlQuat const *const first, struct SmlQuat const *const second, struct SmlQuat *const destination);

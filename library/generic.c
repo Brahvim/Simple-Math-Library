@@ -1,7 +1,7 @@
+#include "ifs.h"
 #include <math.h>
 #include <float.h>
-
-#include "ifs.h"
+#include <stddef.h>
 #include "library/sml.h"
 
 #pragma region // `float` casts.
@@ -18,14 +18,14 @@ inline struct SmlQuat smlQuat(float const *const p_array) {
 }
 
 inline struct SmlMat22 smlMat22(float const *const p_array) {
-	return (struct SmlMat22) {
+	return (struct SmlMat22) { // Looks perfectly aligned in non-monospace fonts 😅
 		/*		*/  .r11 = p_array[0], .r12 = p_array[1],
 			/*	*/	.r21 = p_array[2], .r22 = p_array[3],
 	};
 }
 
 inline struct SmlMat33 smlMat33(float const *const p_array) {
-	return (struct SmlMat33) {
+	return (struct SmlMat33) { // Looks perfectly aligned in non-monospace fonts 😅
 		/*		*/	.r11 = p_array[0], .r12 = p_array[1], .r13 = p_array[2],
 			/*	*/	.r21 = p_array[3], .r22 = p_array[4], .r23 = p_array[5],
 			/*	*/	.r31 = p_array[6], .r32 = p_array[7], .r33 = p_array[8],
@@ -33,7 +33,7 @@ inline struct SmlMat33 smlMat33(float const *const p_array) {
 }
 
 inline struct SmlMat44 smlMat44(float const *const p_array) {
-	return (struct SmlMat44) { // Looks perfectly aligned in non-monospace fonts 😅}
+	return (struct SmlMat44) { // Looks perfectly aligned in non-monospace fonts 😅
 		/*		 */ .r11 = p_array[0], .r12 = p_array[1], .r13 = p_array[2], .r14 = p_array[3],
 			/*	*/	.r21 = p_array[4], .r22 = p_array[5], .r23 = p_array[6], .r24 = p_array[7],
 			/*	*/	.r31 = p_array[8], .r32 = p_array[9], .r33 = p_array[10], .r34 = p_array[11],
@@ -43,19 +43,19 @@ inline struct SmlMat44 smlMat44(float const *const p_array) {
 #pragma endregion
 
 float* smlMatMult(
-	float *p_destination,	// leftColumnCount x rightColumnCount
-	float const *p_left,	// leftColumnCount x rightRowCount
-	float const *p_right,	// rightRowCount x rightColumnCount
-	unsigned long long const p_rightRowCount,
-	unsigned long long const p_leftColumnCount,
-	unsigned long long const p_rightColumnCount
+	float *const p_destination,	// `p_leftColumnCount	x	p_rightColumnCount`
+	float const *p_right,		// `p_rightRowCount		x	p_rightColumnCount`
+	float const *p_left,		// `p_leftColumnCount	x	p_rightRowCount`
+	size_t const p_rightRowCount,
+	size_t const p_leftColumnCount,
+	size_t const p_rightColumnCount
 ) {
-	for (unsigned long long i = 0; i < p_leftColumnCount; ++i) {
+	for (size_t i = 0; i < p_leftColumnCount; ++i) {
 
-		for (unsigned long long j = 0; j < p_rightColumnCount; ++j) {
+		for (size_t j = 0; j < p_rightColumnCount; ++j) {
 
 			float sum = 0.0f;
-			for (unsigned long long k = 0; k < p_rightRowCount; ++k) {
+			for (size_t k = 0; k < p_rightRowCount; ++k) {
 
 				sum += p_left[i * p_rightRowCount + k] * p_right[k * p_rightColumnCount + j];
 

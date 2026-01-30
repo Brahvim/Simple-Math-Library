@@ -38,43 +38,43 @@ inline struct SmlQuat* smlQuatFromMatrix33(struct SmlMat33 const *p_matrix, stru
 	ifl(trace > 0.0f) {
 
 		float const s = 2.0f * __builtin_sqrtf(trace + 1.0f); // `4w`
-		float const sInv = 1.0f / s;
-		p_quaternion->x = (p_matrix->r32 - p_matrix->r23) * sInv;
-		p_quaternion->y = (p_matrix->r13 - p_matrix->r31) * sInv;
-		p_quaternion->z = (p_matrix->r21 - p_matrix->r12) * sInv;
+		float const i = 1.0f / s;
+		p_quaternion->x = (p_matrix->r32 - p_matrix->r23) * i;
+		p_quaternion->y = (p_matrix->r13 - p_matrix->r31) * i;
+		p_quaternion->z = (p_matrix->r21 - p_matrix->r12) * i;
 		p_quaternion->w = s * 0.25f;
 
 	}
- else { // TODO: Figure out how to lower branches if one *actually* can...
+	else { // TODO: Figure out how to lower branches if one *actually* can...
 
-	 ifu(p_matrix->r11 > p_matrix->r22 && p_matrix->r11 > p_matrix->r33) {
+		ifu(p_matrix->r11 > p_matrix->r22 && p_matrix->r11 > p_matrix->r33) {
 
-		 float const s = 2.0f * __builtin_sqrtf(1.0f + p_matrix->r11 - p_matrix->r22 - p_matrix->r33);
-		 float const sInv = 1.0f / s;
-		 p_quaternion->x = s * 0.25f;
-		 p_quaternion->y = (p_matrix->r12 + p_matrix->r21) * sInv;
-		 p_quaternion->z = (p_matrix->r13 + p_matrix->r31) * sInv;
-		 p_quaternion->w = (p_matrix->r32 - p_matrix->r23) * sInv;
-
-	 }
- else ifu(p_matrix->r22 > p_matrix->r33) {
-
-	 float const s = 2.0f * __builtin_sqrtf(1.0f + p_matrix->r22 - p_matrix->r11 - p_matrix->r33);
-	 float const sInv = 1.0f / s;
-	 p_quaternion->x = (p_matrix->r12 + p_matrix->r21) * sInv;
-	 p_quaternion->y = s * 0.25f;
-	 p_quaternion->z = (p_matrix->r23 + p_matrix->r32) * sInv;
-	 p_quaternion->w = (p_matrix->r13 - p_matrix->r31) * sInv;
+			float const s = 2.0f * __builtin_sqrtf(1.0f + p_matrix->r11 - p_matrix->r22 - p_matrix->r33);
+			float const sInv = 1.0f / s;
+			p_quaternion->x = s * 0.25f;
+			p_quaternion->y = (p_matrix->r12 + p_matrix->r21) * sInv;
+			p_quaternion->z = (p_matrix->r13 + p_matrix->r31) * sInv;
+			p_quaternion->w = (p_matrix->r32 - p_matrix->r23) * sInv;
 
 		}
- else {
+		else ifu(p_matrix->r22 > p_matrix->r33) {
 
-	 float const s = 2.0f * __builtin_sqrtf(1.0f + p_matrix->r33 - p_matrix->r11 - p_matrix->r22);
-	 float const sInv = 1.0f / s;
-	 p_quaternion->x = (p_matrix->r13 + p_matrix->r31) * sInv;
-	 p_quaternion->y = (p_matrix->r23 + p_matrix->r32) * sInv;
-	 p_quaternion->z = s * 0.25f;
-	 p_quaternion->w = (p_matrix->r21 - p_matrix->r12) * sInv;
+			float const s = 2.0f * __builtin_sqrtf(1.0f + p_matrix->r22 - p_matrix->r11 - p_matrix->r33);
+			float const sInv = 1.0f / s;
+			p_quaternion->x = (p_matrix->r12 + p_matrix->r21) * sInv;
+			p_quaternion->y = s * 0.25f;
+			p_quaternion->z = (p_matrix->r23 + p_matrix->r32) * sInv;
+			p_quaternion->w = (p_matrix->r13 - p_matrix->r31) * sInv;
+
+		}
+		else {
+
+			float const s = 2.0f * __builtin_sqrtf(1.0f + p_matrix->r33 - p_matrix->r11 - p_matrix->r22);
+			float const sInv = 1.0f / s;
+			p_quaternion->x = (p_matrix->r13 + p_matrix->r31) * sInv;
+			p_quaternion->y = (p_matrix->r23 + p_matrix->r32) * sInv;
+			p_quaternion->z = s * 0.25f;
+			p_quaternion->w = (p_matrix->r21 - p_matrix->r12) * sInv;
 
 		}
 
